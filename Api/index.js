@@ -44,7 +44,6 @@ app.delete('/:id',(req,res)=>{
 app.put('/',(req,res)=>{
 
     let user=req.body;
-
     
     for(let i=0;i<d.length;i++){
 
@@ -54,14 +53,13 @@ app.put('/',(req,res)=>{
           
         }
     }
-   
-    res.json("from put")
+
+    res.json(d);
 });
 
 app.listen(3000,()=>{
 
     console.log('App listenining on port 3000');
-
 
 });
 
