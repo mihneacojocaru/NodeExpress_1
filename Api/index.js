@@ -13,8 +13,6 @@ app.use(express.json());
 
 app.use(express.urlencoded({extended:false}));
 
-
-
 let d=data();
 
 app.get('/',(req,res)=>{
@@ -46,15 +44,12 @@ app.put('/',(req,res)=>{
     let user=req.body;
     
     for(let i=0;i<d.length;i++){
-
         if(d[i].id==user.id){
-
-            d[i]=user;
-          
+            d[i]=user; 
         }
     }
 
-    res.json(d);
+    res.json("From put");
 });
 
 app.listen(3000,()=>{

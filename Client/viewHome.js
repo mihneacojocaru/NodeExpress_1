@@ -1,5 +1,7 @@
 export default class ViewHome {
   constructor() {
+    this.person = {};
+
     this.header = document.getElementById("header");
     this.header.innerHTML = this.setHeader();
 
@@ -12,10 +14,9 @@ export default class ViewHome {
     this.form.addEventListener("change", this.handleChange);
     this.form.addEventListener("submit", this.handleSubmit);
 
-    this.person = {};
-
     this.table = document.getElementById("dataTable");
     this.table.addEventListener("click", this.handleUpdateDelete);
+
   }
 
   load = async () => {
@@ -26,6 +27,21 @@ export default class ViewHome {
     d.forEach((element) => {
       this.createTableEntry(element);
     });
+  };
+
+  getNextId = async () => {
+    let data = await fetch("http://localhost:3000/");
+
+    let d = await data.json();
+
+    let idList = [];
+
+    d.forEach(element => {
+      idList.push(element.id);
+    })
+
+    let nextId = idList.pop() + 1;
+    return nextId;
   };
 
   createTableEntry = (obj) => {
@@ -98,6 +114,20 @@ export default class ViewHome {
   handleSubmit = async (e) => {
     e.preventDefault();
     try {
+
+      let fName = document.getElementById('fNameInput');
+      let lName = document.getElementById('lNameInput');
+      let email = document.getElementById('emailInput');
+
+      this.person.id = await this.getNextId();
+      this.person.first_name = fName.value;
+      this.person.last_name = lName.value;
+      this.person.email = email.value;
+
+      fName.value = "";
+      lName.value = "";
+      email.value = "";
+
       let options = {
         method: "POST",
         mode: "cors",
@@ -111,6 +141,12 @@ export default class ViewHome {
       let data = await fetch("http://localhost:3000", options);
 
       let d = await data.json();
+
+      let table = document.getElementById("table");
+
+      table.innerHTML = "";
+
+      this.load();
 
       if (d !== "Am reusit") {
       } else {
@@ -140,9 +176,13 @@ export default class ViewHome {
 
         let r = await response.json();
 
-        console.log(r);
+        let table = document.getElementById("table");
+
+        table.innerHTML = "";
 
         this.load();
+
+
       } catch (error) {
           console.warn(error);
       }
@@ -183,16 +223,28 @@ export default class ViewHome {
         let emailInput = document.querySelector(".emailInput");
 
         this.person.id = obj.parentElement.parentElement.children[0].textContent;
-        this.person.first_name = fNameInput.value;
-        this.person.last_name = lNameInput.value;
-        this.person.email = emailInput.value;
+        this.person.first_name = fNameInput.value.trim();
+        this.person.last_name = lNameInput.value.trim();
+        this.person.email = emailInput.value.trim();
 
+        let firstName = obj.parentElement.parentElement.children[1];
+        let lastName = obj.parentElement.parentElement.children[2];
+        let email = obj.parentElement.parentElement.children[3];
+
+        firstName.innerHTML = this.person.first_name;
+        lastName.innerHTML = this.person.last_name;
+        email.innerHTML = this.person.email;
+
+        this.handleUpdate();
+
+        obj.textContent = "Update";
+        obj.id = "btnUpdate";
     }
   };
 
   handleUpdate = async(e)=>{
 
-    e.preventDefault();
+    //e.preventDefault();
     try {
         let options = {
             method:"PUT",
